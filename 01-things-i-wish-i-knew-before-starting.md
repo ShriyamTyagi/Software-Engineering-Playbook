@@ -29,7 +29,7 @@ Every week I discovered something new.
 I believed learning more technologies would automatically make me more employable.
 
 Instead, everytime I went through few lectures of something, I got to hear something better about the other technology or framework.
-This restricted my progress in the initial days and I ended wasting my valuable time.
+This restricted my progress in the initial days and I ended up wasting my valuable time.
 
 ### What I'd Do Today
 
