@@ -1,0 +1,236 @@
+# Three React Concepts That Finally Clicked After Building Real Projects
+
+## Introduction
+
+When I first started learning React, I thought I understood these concepts because I could write the syntax.
+
+```jsx
+useEffect(() => {}, [])
+
+const value = useMemo(() => {}, [])
+
+items.map(...)
+```
+
+But understanding **how to write** them and understanding **why they exist** are two very different things.
+
+It wasn't until I started building production applications that these concepts finally made sense.
+
+This article explains those "aha!" moments.
+
+---
+
+# 1. useEffect
+
+## What I thought
+
+I believed `useEffect` was simply where API calls belonged.
+
+Every tutorial seemed to fetch data inside `useEffect`, so I assumed that was its purpose.
+
+```jsx
+useEffect(() => {
+    fetchUsers();
+}, []);
+```
+
+While this works, it doesn't explain **why** useEffect exists.
+
+---
+
+## What it actually does
+
+The purpose of `useEffect` is:
+
+> **Synchronize your React component with something outside React.**
+
+Examples include:
+
+* Fetching data
+* Listening to browser events
+* Updating the document title
+* Working with Local Storage
+* Creating timers
+* Connecting WebSockets
+
+Think of it like this:
+
+React renders your UI.
+
+After the render is complete, `useEffect` performs any work that interacts with the outside world.
+
+---
+
+## Common mistakes
+
+* Fetching data without proper dependencies.
+* Forgetting to clean up event listeners.
+* Using `useEffect` for calculations that should happen during rendering.
+* Ignoring dependency warnings.
+
+---
+
+## Mental model
+
+**Render → React updates the UI**
+
+**Effect → Synchronize with the outside world**
+
+If your code doesn't interact with something outside React, ask yourself whether you need `useEffect` at all.
+
+---
+
+# 2. useMemo
+
+## What I thought
+
+I assumed `useMemo` made every component faster.
+
+So I started wrapping almost everything inside it.
+
+```jsx
+const name = useMemo(() => user.name, [user]);
+```
+
+The code became more complicated.
+
+Performance didn't improve.
+
+---
+
+## What it actually does
+
+`useMemo` stores the result of an expensive calculation and reuses it until one of its dependencies changes.
+
+Imagine sorting 20,000 products.
+
+```jsx
+const sortedProducts = useMemo(() => {
+    return products.sort(compareProducts);
+}, [products]);
+```
+
+Without `useMemo`, the sorting happens on every render.
+
+With `useMemo`, React reuses the previous result until `products` changes.
+
+---
+
+## When NOT to use it
+
+Avoid memoizing:
+
+* Simple calculations
+* Primitive values
+* Code that isn't expensive
+* Every component "just in case"
+
+Memoization also has a cost.
+
+If the calculation is already cheap, `useMemo` can make your code more complex without improving performance.
+
+---
+
+## Mental model
+
+Ask yourself one question:
+
+> **Is this calculation expensive enough that recalculating it every render would noticeably impact performance?**
+
+If the answer is no, you probably don't need `useMemo`.
+
+---
+
+# 3. Keys in Lists
+
+## What I thought
+
+I thought keys existed only to remove React warnings.
+
+So I wrote:
+
+```jsx
+items.map((item, index) => (
+    <Card key={index} />
+))
+```
+
+Everything looked fine.
+
+Until it didn't.
+
+---
+
+## The real purpose
+
+Keys give React a stable identity for each element.
+
+Imagine three tasks.
+
+```text
+A
+B
+C
+```
+
+Now remove A.
+
+The new list becomes
+
+```text
+B
+C
+```
+
+If you're using indexes as keys:
+
+```
+0
+1
+```
+
+React may think the old "A" component is now "B" and reuse its internal state incorrectly.
+
+Using a unique ID avoids this problem because React knows exactly which component each item represents.
+
+```jsx
+<Card key={task.id} />
+```
+
+---
+
+## When index keys are acceptable
+
+Using the array index is generally safe only when:
+
+* The list is static.
+* Items are never reordered.
+* Items are never inserted or removed.
+
+Otherwise, prefer a stable unique identifier.
+
+---
+
+# Final Thoughts
+
+These concepts stopped feeling "advanced" once I understood the problems they were designed to solve.
+
+Instead of memorizing React APIs, try asking:
+
+* Why was this Hook introduced?
+* What problem does it solve?
+* What happens if I don't use it?
+
+That shift in thinking made React much easier to understand and helped me write cleaner, more maintainable code.
+
+---
+
+## Key Takeaways
+
+* **useEffect** exists to synchronize your component with systems outside React.
+* **useMemo** is a performance optimization tool—not something to add everywhere.
+* **Keys** help React preserve component identity across renders and prevent subtle UI bugs.
+
+Mastering React isn't about knowing every Hook.
+
+It's about understanding **why** each one exists.
